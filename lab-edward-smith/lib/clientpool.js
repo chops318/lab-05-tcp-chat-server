@@ -5,30 +5,26 @@ const EE = require('events');
 
 var ClientPool = function() {
   this.ee = new EE();
-  this.pool = {};
-  this.ee.on('connect', (socket) => {
+  this.pool = [];
+  this.ee.on('register', (socket) => {
     let id = (Math.floor(Math.random() * 999999999999));
     socket.id = id;
     socket.nickname = 'guest_'+ id;
-    this.pool[id] = socket;
-    console.log(this.pool[id].id)
+    this.pool.push(socket);
+    this.message(socket, socket.nickname + ' has connected to the server\n')
   })
-  this.ee.on('broadcast', (data) => {
-    console.log(data.toString())
+  this.ee.on('broadcast', (socket, data) => {
+    this.message(socket, data)
   })
-  this.ee.on('disconnect', () => {
-    console.log(this.pool[id] + ' disconnected')
+  this.ee.on('disconnect', (socket) => {
+    this.message(socket, socket.nickname + ' disconnected')
   })
-
+  this.message = function(sender, message) {
+    this.pool.forEach(function(client) {
+      if (client !== sender)
+      client.write(sender.nickname + ': ' + message)
+    })
+  }
 }
 
-// ClientPool.prototype.addClient = function(socket) {
-//   socket.randomKey = (Math.floor(Math.random() * 999999999999));
-//   this.pool['user_' + socket.randomKey] = socket
-//   debugger;
-// }
-
-
-
-// Client.prototype.
 module.exports = ClientPool;

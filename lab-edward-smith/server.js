@@ -3,12 +3,12 @@
 const net        = require('net');
 const ClientPool = require('./lib/clientpool.js')
 
+var clients = new ClientPool();
+
 let server  = net.createServer((socket) => {
-  var clients = new ClientPool();
-  // clients.emit('arg')
-  clients.ee.emit('connect', socket)
-  socket.on('data', (message) => {
-    clients.ee.emit('broadcast', message)
+  clients.ee.emit('register', socket)
+  socket.on('data', (data) => {
+    clients.ee.emit('broadcast', socket, data)
   })
 
   socket.on('end', () => {
