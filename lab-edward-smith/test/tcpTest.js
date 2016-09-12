@@ -16,4 +16,18 @@ describe('Chat Server', () => {
     expect(this.client1).to.exist;
     expect(this.client2).to.exist;
   });
+
+  it('should write a message', function() {
+    let message = ['test message TWO'];
+    let messageOut = ['test message TWO'];
+
+    this.client1.on('data', function(data) {
+      expect(data.toString()).to.eql(message.pop());
+      if (messageOut.length) {
+        this.client2.write(messageOut.pop());
+      } else {
+        this.client2.end();
+      }
+    });
+  });
 });
